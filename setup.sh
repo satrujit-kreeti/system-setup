@@ -44,7 +44,7 @@ fi
 
 type rbenv
 
-if [ $(type rbenv) ]; then
+if [ $(which rbenv) ]; then
     ruby_version=$(rbenv install --list |fzf --border --height=10 --reverse --no-info --prompt="Select ruby version to install")
 
     rbenv install $ruby_version
