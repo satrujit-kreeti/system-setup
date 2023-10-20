@@ -44,9 +44,14 @@ fi
 
 type rbenv
 
-ruby_version=$(rbenv install --list |fzf --border --height=10 --reverse --no-info --prompt="Select ruby version to install")
-rbenv install $ruby_version
-rbenv global $ruby_version
-rails_version=$(gem search '^rails$' --remote --all | grep -Eo '([0-9]\.)+[0-9]' | fzf --border --height=30 --reverse --no-info --prompt="Select rails version to install")
-gem install bundler
-gem install rails -v $rails_version
+if rbenv -v &>/dev/null; then
+    ruby_version=$(rbenv install --list |fzf --border --height=10 --reverse --no-info --prompt="Select ruby version to install")
+    rbenv install $ruby_version
+    rbenv global $ruby_version
+    rails_version=$(gem search '^rails$' --remote --all | grep -Eo '([0-9]\.)+[0-9]' | fzf --border --height=30 --reverse --no-info --prompt="Select rails version to install")
+    gem install bundler
+    gem install rails -v $rails_version
+else
+    echo "Rerun the command in a new window or tab to complete the setup"
+    exit 1
+fi
