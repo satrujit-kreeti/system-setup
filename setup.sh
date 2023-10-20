@@ -44,11 +44,9 @@ fi
 
 type rbenv
 
-gnome-terminal -- $(which bash) -c "
 ruby_version=$(rbenv install --list |fzf --border --height=10 --reverse --no-info --prompt="Select ruby version to install")
 rbenv install $ruby_version
 rbenv global $ruby_version
 rails_version=$(gem search '^rails$' --remote --all | grep -Eo '([0-9]\.)+[0-9]' | fzf --border --height=30 --reverse --no-info --prompt="Select rails version to install")
 gem install bundler
 gem install rails -v $rails_version
-"
