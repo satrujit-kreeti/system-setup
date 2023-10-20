@@ -44,7 +44,7 @@ fi
 
 type rbenv
 
-gnome-terminal -- /usr/bin/bash -c "
+gnome-terminal -- $(which bash) -c "
     if rbenv -v &>/dev/null; then
         ruby_version=$(rbenv install --list |fzf --border --height=10 --reverse --no-info --prompt="Select ruby version to install")
 
