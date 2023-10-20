@@ -44,7 +44,7 @@ fi
 
 type rbenv
 
-gnome-terminal -- /usr/bin/bash -c "
+gnome-terminal -- bash -c '
     if rbenv -v &>/dev/null; then
         ruby_version=$(rbenv install --list |fzf --border --height=10 --reverse --no-info --prompt="Select ruby version to install")
 
@@ -59,4 +59,4 @@ gnome-terminal -- /usr/bin/bash -c "
         echo "Close and open the terminal and rerun the command to initialize rbenv"
         exit 1
     fi
-"
+'
