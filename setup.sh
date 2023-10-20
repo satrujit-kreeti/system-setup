@@ -1,56 +1,61 @@
-#! /bin/sh
+#! /usr/bin/bash
 
 
+sudo apt update
+sudo apt install nala -y
+sudo nala install git curl fzf libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev -y
+sudo nala update
 
-sudo apt update && sudo apt install git nala curl libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev
+if ! node -v &>/dev/null; then
+    node_version=$(printf '%s\n' "18" "16" "14" "12" | fzf --border --height=10 --reverse --no-info --prompt="Select nodejs version to install")
+fi
+node_installed=$(node -v)
 
+if [ "$node_installed" ]; then
+    echo "node $node_installed already installed"
+else
 
-echo "node installtion begin ================"
+    if [ -z "$node_version" ]; then
+        echo "No version selected. Exiting."
+        exit 1
+    fi
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+    source ~/.bashrc        
+    source ~/.nvm/nvm.sh
 
-wget https://nodejs.org/download/release/v18.17.1/node-v18.17.1-linux-x64.tar.gz
-sudo tar -xvf node-v18.17.1-linux-x64.tar.gz
-sudo cp -r node-v18.17.1-linux-x64/{bin,include,lib,share} /usr/
-export PATH=/usr/node-v18.17.1-linux-x64/bin:$PATH
+    nvm install $node_version
+    nvm use $node_version
 
-node --version
+    npm install -g yarn
 
+    echo "node $(node -v) & yarn v$(yarn -v) is installed in the system"
+fi
 
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo nala update
 
+echo "ruby and rails installation begin ========================"
+if ! rbenv -v &>/dev/null; then
 
-sudo nala update && sudo nala install yarn
-
-echo "node and yarn are successfully installed"
-
-echo "rails installtion begin =============="
-
-
-curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-source ~/.bashrc
+    curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+    echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+    source ~/.bashrc
+fi
 
 type rbenv
 
+if [ $(rbenv -v) ]; then
+    ruby_version=$(rbenv install --list |fzf --border --height=10 --reverse --no-info --prompt="Select ruby version to install")
 
+    rbenv install $ruby_version
+    rbenv global $ruby_version
 
-rbenv install 3.2.1
-rbenv global 3.2.1
+    rails_version=$(gem search '^rails$' --remote --all | grep -Eo '([0-9]\.)+[0-9]' | fzf --border --height=30 --reverse --no-info --prompt="Select rails version to install")
 
-
-gem install bundler
-gem install rails
-
-rails -v
-
-
-echo "postgres instllation begin ==================="
-
-sudo nala install postgresql postgresql-contrib mysql-server
-
-sudo systemctl start postgresql
-
-sudo systemctl start mysql
-
+    gem install bundler
+    gem install rails -v $rails_version
+else
+    echo "Close and open the terminal and rerun the command to initialize rbenv"
+    exit 1
+fi
 
