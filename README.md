@@ -1,4 +1,4 @@
-# Automated rails setup script for debian system
+# Automated rails setup script for debian systems
 
 Run this command to install, if any error happen then run this command again
 ```bash
